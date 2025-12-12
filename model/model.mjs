@@ -1,5 +1,6 @@
 import { Libro } from './libro.mjs';
 import { Usuario } from './usuario.mjs';
+import bcrypt from 'bcrypt'; // [cite: 30] Importar bcrypt
 
 export const ROL = {
   ADMIN: "ADMIN",
@@ -35,6 +36,8 @@ export class Libreria {
   async addCliente(obj) {
     let cliente = await this.getClientePorEmail(obj.email);
     if (cliente) throw new Error('Correo electrónico registrado');
+    // Hashear password [cite: 139]
+    obj.password = await bcrypt.hash(obj.password, 10);    
     return await new Usuario(obj).save();
   }
 
@@ -62,7 +65,10 @@ export class Libreria {
     usuario.apellidos = obj.apellidos;
     usuario.email = obj.email;
     usuario.direccion = obj.direccion;
-    usuario.password = obj.password;
+    // Hashear password si se actualiza [cite: 165]
+    if(obj.password) {
+        usuario.password = await bcrypt.hash(obj.password, 10);
+    }
     usuario.dni = obj.dni;
     return await usuario.save();
   }
