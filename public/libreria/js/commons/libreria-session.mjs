@@ -2,6 +2,7 @@ import { ROL } from "../model/proxy.mjs";
 
 const USUARIO_ID = 'USUARIO_ID';
 const USUARIO_ROL = 'USUARIO_ROL';
+const TOKEN_ID = 'TOKEN_ID'; // [cite: 172]
 
 class LibreriaSession {
 
@@ -14,6 +15,10 @@ class LibreriaSession {
       currencySign: "accounting",
     });
   }
+  
+  // Nuevos métodos para el Token [cite: 174]
+  setToken(token) { sessionStorage.setItem(TOKEN_ID, token); }
+  getToken() { return sessionStorage.getItem(TOKEN_ID); }
 
   ingreso(usuario) {
     this.setUsuarioId(usuario._id);
@@ -32,6 +37,7 @@ class LibreriaSession {
   salir() {
     sessionStorage.removeItem(USUARIO_ID);
     sessionStorage.removeItem(USUARIO_ROL);
+    sessionStorage.removeItem(TOKEN_ID); // [cite: 173]    
   }
 
   esInvitado() { return !this.getUsuarioRol(); }

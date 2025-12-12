@@ -42,11 +42,28 @@ export class LibreriaProxy {
     }
   }
 
+  // Nuevo método para obtener usuario actual usando el token [cite: 241]
+  async getUsuarioActual() {
+    let response = await fetch("/api/usuarios/actual", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "Authorization": `bearer ${libreriaSession.getToken()}` // [cite: 248]
+        },
+    });
+    if (response.ok) { return await response.json(); }
+    else {
+        let body = await response.json();
+        throw new Error(`Error ${response.status}: ${response.statusText}\n ${body.message}`);
+    }
+  }
+
   async getUsuarioById(id) {
     let response = await fetch('/api/usuarios/'+id, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
+        'Authorization': `bearer ${libreriaSession.getToken()}` // Añadir Auth [cite: 235]        
       }
     });
     if (response.ok) {
@@ -64,6 +81,7 @@ export class LibreriaProxy {
       body: JSON.stringify(obj),
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
+        'Authorization': `bearer ${libreriaSession.getToken()}` // Añadir Auth [cite: 262]        
       },
     });
     if (response.ok) {

@@ -25,15 +25,26 @@ export class InvitadoIngresoPresenter extends Presenter {
   async ingresoClick(event) {
     event.preventDefault();
     try {
-      let usuario;
-      usuario = await this.model.autenticar(this.usuarioObject);
-      libreriaSession.ingreso(usuario);
+      // 1. Autenticar y obtener token [cite: 189]
+      let respuestaAuth = await this.model.autenticar(this.usuarioObject);
+      
+      // 2. Guardar token
+      libreriaSession.setToken(respuestaAuth.token); // [cite: 191]
+
+      // 3. Obtener datos del usuario usando el token (recurso privado)
+      let usuario = await this.model.getUsuarioActual(); // [cite: 192]
+
+      // 4. Guardar sesión de usuario
+      libreriaSession.ingreso(usuario); // [cite: 194]
+
       this.mensajesPresenter.mensaje(`Bienvenido ${usuario.nombres} ${usuario.apellidos}!`);
+      
       if (libreriaSession.esCliente())
         await router.navigate('/libreria/cliente-perfil.html');
       else if (libreriaSession.esAdmin())
         await router.navigate('/libreria/admin-perfil.html');
       else throw new Error('Rol no identificado');
+
     } catch (e) {
       console.error(e);
       this.mensajesPresenter.error(e.message);
